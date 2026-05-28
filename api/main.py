@@ -1,4 +1,6 @@
 import os
+import time
+import requests
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from fastapi import FastAPI, HTTPException
@@ -92,6 +94,77 @@ def get_forex(pair: str, period: str = "1mo"):
 def get_crypto(coin: str, period: str = "1mo"):
     ticker = resolve_ticker("crypto", coin)
     return {"ticker": ticker, "asset": coin, "period": period, "data": fetch_history(ticker, period)}
+
+
+MACRO_COUNTRIES = [
+    {"code": "USA", "name": "États-Unis",  "flag": "🇺🇸"},
+    {"code": "DEU", "name": "Allemagne",   "flag": "🇩🇪"},
+    {"code": "GBR", "name": "Royaume-Uni", "flag": "🇬🇧"},
+    {"code": "JPN", "name": "Japon",       "flag": "🇯🇵"},
+    {"code": "CHN", "name": "Chine",       "flag": "🇨🇳"},
+    {"code": "CHE", "name": "Suisse",      "flag": "🇨🇭"},
+    {"code": "CAN", "name": "Canada",      "flag": "🇨🇦"},
+    {"code": "FRA", "name": "France",      "flag": "🇫🇷"},
+]
+
+MACRO_INDICATORS: dict[str, str] = {
+    "gdp_growth":      "NGDP_RPCH",
+    "cpi":             "PCPIPCH",
+    "unemployment":    "LUR",
+    "debt_gdp":        "GGXWDG_NGDP",
+    "current_account": "BCA_NGDPD",
+}
+
+_IMF_BASE = "https://www.imf.org/external/datamapper/api/v1"
+_macro_cache: dict = {"data": None, "ts": 0.0}
+_MACRO_TTL = 3600
+
+
+def _fetch_imf(country_code: str, imf_indicator: str) -> dict | None:
+    try:
+        r = requests.get(f"{_IMF_BASE}/{imf_indicator}/{country_code}", timeout=10)
+        r.raise_for_status()
+        values: dict = r.json().get("values", {}).get(imf_indicator, {}).get(country_code, {})
+        if not values:
+            return None
+        current_year = int(time.strftime("%Y"))
+        for year in sorted(values.keys(), reverse=True):
+            if int(year) > current_year:
+                continue
+            v = values[year]
+            if v is not None:
+                return {"value": round(float(v), 1), "year": str(year)}
+        return None
+    except Exception:
+        return None
+
+
+@app.get("/macro")
+def get_macro():
+    now = time.time()
+    if _macro_cache["data"] and now - _macro_cache["ts"] < _MACRO_TTL:
+        return _macro_cache["data"]
+
+    country_map = {c["code"]: {**c, "indicators": {}} for c in MACRO_COUNTRIES}
+    tasks = [
+        (c["code"], ind_key, imf_code)
+        for c in MACRO_COUNTRIES
+        for ind_key, imf_code in MACRO_INDICATORS.items()
+    ]
+
+    with ThreadPoolExecutor(max_workers=min(len(tasks), 20)) as executor:
+        future_map = {
+            executor.submit(_fetch_imf, country_code, imf_code): (country_code, ind_key)
+            for country_code, ind_key, imf_code in tasks
+        }
+        for future in as_completed(future_map):
+            country_code, ind_key = future_map[future]
+            country_map[country_code]["indicators"][ind_key] = future.result()
+
+    result = [country_map[c["code"]] for c in MACRO_COUNTRIES]
+    _macro_cache["data"] = result
+    _macro_cache["ts"] = now
+    return result
 
 
 def _fetch_asset_snapshot(category: str, asset_key: str, ticker: str) -> dict | None:

@@ -191,6 +191,68 @@ body {
   text-align: right;
 }
 
+/* ── Macro table ─────────────────────────────────────── */
+.macro-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.macro-table th {
+  padding: 0.75rem 1rem;
+  text-align: right;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #555;
+  background: #0d0d0d;
+  white-space: nowrap;
+}
+
+.macro-table td {
+  padding: 0 1rem;
+  vertical-align: middle;
+}
+
+.macro-table tbody tr {
+  transition: background 0.12s;
+}
+
+.macro-table tbody tr:hover {
+  background: #111;
+}
+
+.macro-table__country {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.85rem 0;
+  font-size: 0.875rem;
+  color: #ccc;
+  white-space: nowrap;
+}
+
+.macro-table__value {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.macro-table__value span:first-child {
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  font-family: monospace;
+}
+
+.macro-table__year {
+  display: block;
+  font-size: 0.65rem;
+  color: #333;
+  margin-top: 0.1rem;
+  font-family: monospace;
+  font-weight: 400;
+}
+
 /* ── Back link ───────────────────────────────────────── */
 .back-link {
   font-size: 0.875rem;

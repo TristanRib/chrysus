@@ -3,3 +3,4 @@ uvicorn[standard]==0.34.3
 yfinance==0.2.61
 groq==1.4.0
 python-dotenv==1.2.2
+requests>=2.32.0

@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 const NAV = [
   { label: "Tableau de bord", href: "/dashboard" },
   { label: "Marchés",         href: "/marches"   },
+  { label: "Nations",         href: "/nations"   },
 ];
 
 export default function Header() {
