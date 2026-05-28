@@ -52,8 +52,11 @@ type Country = {
   code: string;
   name: string;
   flag: string;
+  continent: string;
   indicators: Record<IndicatorKey, IndicatorValue>;
 };
+
+const CONTINENT_ORDER = ["Amériques", "Asie-Pacifique", "Europe"];
 
 function fmt(key: IndicatorKey, value: number): string {
   const prefix = INDICATORS[key].signed && value > 0 ? "+" : "";
@@ -88,49 +91,64 @@ export default function MacroPage() {
       )}
 
       {loading ? <MacroSkeleton /> : (
-        <div style={{ border: "1px solid #1a1a1a", borderRadius: 10, overflow: "hidden", overflowX: "auto" }}>
-          <table className="macro-table">
-            <thead>
-              <tr>
-                <th style={{ textAlign: "left" }}>Pays</th>
-                {INDICATOR_ORDER.map(key => (
-                  <th key={key}>
-                    {INDICATORS[key].label}
-                    <TooltipIcon text={INDICATORS[key].tooltip} />
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {countries.map((country, i) => (
-                <tr key={country.code} style={{ borderTop: i === 0 ? "none" : "1px solid #141414" }}>
-                  <td>
-                    <div className="macro-table__country">
-                      <span style={{ fontSize: "1.1rem", lineHeight: 1 }}>{country.flag}</span>
-                      <span>{country.name}</span>
-                    </div>
-                  </td>
-                  {INDICATOR_ORDER.map(key => {
-                    const ind = country.indicators[key];
-                    return (
-                      <td key={key} className="macro-table__value">
-                        {ind ? (
-                          <>
-                            <span style={{ color: INDICATORS[key].colorFn(ind.value) }}>
-                              {fmt(key, ind.value)}
-                            </span>
-                            <span className="macro-table__year">{ind.year}</span>
-                          </>
-                        ) : (
-                          <span style={{ color: "#2e2e2e" }}>—</span>
-                        )}
-                      </td>
-                    );
-                  })}
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
+          {CONTINENT_ORDER.map(continent => {
+            const group = countries.filter(c => c.continent === continent);
+            if (!group.length) return null;
+            return (
+              <section key={continent}>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.75rem" }}>
+                  <span style={{ fontSize: "0.72rem", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em", color: "#666" }}>
+                    {continent}
+                  </span>
+                </div>
+                <div style={{ border: "1px solid #1a1a1a", borderRadius: 10, overflow: "hidden", overflowX: "auto" }}>
+                  <table className="macro-table">
+                    <thead>
+                      <tr>
+                        <th style={{ textAlign: "left" }}>Pays</th>
+                        {INDICATOR_ORDER.map(key => (
+                          <th key={key}>
+                            {INDICATORS[key].label}
+                            <TooltipIcon text={INDICATORS[key].tooltip} />
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {group.map((country, i) => (
+                        <tr key={country.code} style={{ borderTop: i === 0 ? "none" : "1px solid #141414" }}>
+                          <td>
+                            <div className="macro-table__country">
+                              <span style={{ fontSize: "1.1rem", lineHeight: 1 }}>{country.flag}</span>
+                              <span>{country.name}</span>
+                            </div>
+                          </td>
+                          {INDICATOR_ORDER.map(key => {
+                            const ind = country.indicators[key];
+                            return (
+                              <td key={key} className="macro-table__value">
+                                {ind ? (
+                                  <>
+                                    <span style={{ color: INDICATORS[key].colorFn(ind.value) }}>
+                                      {fmt(key, ind.value)}
+                                    </span>
+                                    <span className="macro-table__year">{ind.year}</span>
+                                  </>
+                                ) : (
+                                  <span style={{ color: "#2e2e2e" }}>—</span>
+                                )}
+                              </td>
+                            );
+                          })}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+            );
+          })}
         </div>
       )}
 
@@ -143,7 +161,7 @@ export default function MacroPage() {
   );
 }
 
-function MacroSkeleton() {
+function SkeletonTable({ rows }: { rows: number }) {
   return (
     <div style={{ border: "1px solid #1a1a1a", borderRadius: 10, overflow: "hidden" }}>
       <table className="macro-table">
@@ -154,7 +172,7 @@ function MacroSkeleton() {
           </tr>
         </thead>
         <tbody>
-          {Array.from({ length: 7 }).map((_, i) => (
+          {Array.from({ length: rows }).map((_, i) => (
             <tr key={i} style={{ borderTop: i === 0 ? "none" : "1px solid #141414" }}>
               <td>
                 <div className="macro-table__country">
@@ -171,6 +189,19 @@ function MacroSkeleton() {
           ))}
         </tbody>
       </table>
+    </div>
+  );
+}
+
+function MacroSkeleton() {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
+      {[["Amériques", 3], ["Asie-Pacifique", 4], ["Europe", 5]].map(([label, rows]) => (
+        <section key={label}>
+          <div style={{ width: 80, height: 11, background: "#1a1a1a", borderRadius: 3, marginBottom: "0.75rem" }} />
+          <SkeletonTable rows={rows as number} />
+        </section>
+      ))}
     </div>
   );
 }

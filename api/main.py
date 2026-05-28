@@ -100,14 +100,18 @@ def get_crypto(coin: str, period: str = "1mo"):
 
 
 MACRO_COUNTRIES = [
-    {"code": "USA", "name": "États-Unis",  "flag": "🇺🇸"},
-    {"code": "DEU", "name": "Allemagne",   "flag": "🇩🇪"},
-    {"code": "GBR", "name": "Royaume-Uni", "flag": "🇬🇧"},
-    {"code": "JPN", "name": "Japon",       "flag": "🇯🇵"},
-    {"code": "CHN", "name": "Chine",       "flag": "🇨🇳"},
-    {"code": "CHE", "name": "Suisse",      "flag": "🇨🇭"},
-    {"code": "CAN", "name": "Canada",      "flag": "🇨🇦"},
-    {"code": "FRA", "name": "France",      "flag": "🇫🇷"},
+    {"code": "USA", "name": "États-Unis",  "flag": "🇺🇸", "continent": "Amériques"},
+    {"code": "CAN", "name": "Canada",      "flag": "🇨🇦", "continent": "Amériques"},
+    {"code": "BRA", "name": "Brésil",      "flag": "🇧🇷", "continent": "Amériques"},
+    {"code": "JPN", "name": "Japon",       "flag": "🇯🇵", "continent": "Asie-Pacifique"},
+    {"code": "CHN", "name": "Chine",       "flag": "🇨🇳", "continent": "Asie-Pacifique"},
+    {"code": "IND", "name": "Inde",        "flag": "🇮🇳", "continent": "Asie-Pacifique"},
+    {"code": "AUS", "name": "Australie",   "flag": "🇦🇺", "continent": "Asie-Pacifique"},
+    {"code": "DEU", "name": "Allemagne",   "flag": "🇩🇪", "continent": "Europe"},
+    {"code": "FRA", "name": "France",      "flag": "🇫🇷", "continent": "Europe"},
+    {"code": "GBR", "name": "Royaume-Uni", "flag": "🇬🇧", "continent": "Europe"},
+    {"code": "CHE", "name": "Suisse",      "flag": "🇨🇭", "continent": "Europe"},
+    {"code": "ITA", "name": "Italie",      "flag": "🇮🇹", "continent": "Europe"},
 ]
 
 MACRO_INDICATORS: dict[str, str] = {
