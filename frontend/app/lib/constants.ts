@@ -1,6 +1,6 @@
 import type { Category } from "./assets";
 
-export const API_BASE = "http://localhost:8000";
+export const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
 export const PERIODS = ["1d", "5d", "1mo", "3mo", "6mo", "1y"] as const;
 export type Period = (typeof PERIODS)[number];
