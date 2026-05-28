@@ -2,23 +2,45 @@
 
 import { useEffect, useState } from "react";
 import { API_BASE, UP_COLOR, DOWN_COLOR } from "../lib/constants";
+import TooltipIcon from "../components/TooltipIcon";
 
 type IndicatorKey = "gdp_growth" | "cpi" | "unemployment" | "debt_gdp" | "current_account";
 
 type IndicatorMeta = {
   label: string;
   signed: boolean;
+  tooltip: string;
   colorFn: (v: number) => string;
 };
 
 const AMBER = "#f5c842";
 
 const INDICATORS: Record<IndicatorKey, IndicatorMeta> = {
-  gdp_growth:      { label: "Croissance PIB", signed: true,  colorFn: v => v >= 1 ? UP_COLOR : v >= 0 ? AMBER : DOWN_COLOR },
-  cpi:             { label: "Inflation",       signed: false, colorFn: v => v <= 2 ? UP_COLOR : v <= 5 ? AMBER : DOWN_COLOR },
-  unemployment:    { label: "Chômage",         signed: false, colorFn: v => v <= 5 ? UP_COLOR : v <= 8 ? AMBER : DOWN_COLOR },
-  debt_gdp:        { label: "Dette / PIB",     signed: false, colorFn: v => v <= 60 ? UP_COLOR : v <= 100 ? AMBER : DOWN_COLOR },
-  current_account: { label: "Solde courant",   signed: true,  colorFn: v => v >= 0 ? UP_COLOR : DOWN_COLOR },
+  gdp_growth: {
+    label: "Croissance PIB", signed: true,
+    tooltip: "Mesure la croissance de l'économie réelle. Une forte croissance soutient les marchés actions et renforce la devise nationale.",
+    colorFn: v => v >= 1 ? UP_COLOR : v >= 0 ? AMBER : DOWN_COLOR,
+  },
+  cpi: {
+    label: "Inflation", signed: false,
+    tooltip: "Les banques centrales ciblent ~2%. Au-delà, elles remontent les taux — ce qui impacte obligations, forex et marchés actions.",
+    colorFn: v => v <= 2 ? UP_COLOR : v <= 5 ? AMBER : DOWN_COLOR,
+  },
+  unemployment: {
+    label: "Chômage", signed: false,
+    tooltip: "Un faible chômage indique une économie saine mais peut signaler une surchauffe. Suivi de près par la Fed et la BCE pour calibrer leur politique monétaire.",
+    colorFn: v => v <= 5 ? UP_COLOR : v <= 8 ? AMBER : DOWN_COLOR,
+  },
+  debt_gdp: {
+    label: "Dette / PIB", signed: false,
+    tooltip: "Soutenabilité des finances publiques. Une dette > 100% du PIB augmente le risque souverain et peut fragiliser la devise sur le long terme.",
+    colorFn: v => v <= 60 ? UP_COLOR : v <= 100 ? AMBER : DOWN_COLOR,
+  },
+  current_account: {
+    label: "Solde courant", signed: true,
+    tooltip: "Excédent = pays exportateur net, renforce la devise. Déficit = dépendance aux capitaux étrangers et vulnérabilité aux chocs de marché.",
+    colorFn: v => v >= 0 ? UP_COLOR : DOWN_COLOR,
+  },
 };
 
 const INDICATOR_ORDER: IndicatorKey[] = [
@@ -72,7 +94,10 @@ export default function MacroPage() {
               <tr>
                 <th style={{ textAlign: "left" }}>Pays</th>
                 {INDICATOR_ORDER.map(key => (
-                  <th key={key}>{INDICATORS[key].label}</th>
+                  <th key={key}>
+                    {INDICATORS[key].label}
+                    <TooltipIcon text={INDICATORS[key].tooltip} />
+                  </th>
                 ))}
               </tr>
             </thead>
