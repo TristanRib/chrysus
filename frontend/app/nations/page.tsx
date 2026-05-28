@@ -66,7 +66,7 @@ export default function MacroPage() {
   const [error, setError]         = useState(false);
 
   useEffect(() => {
-    fetch(`${API_BASE}/macro`)
+    fetch(`${API_BASE}/nations`)
       .then(r => { if (!r.ok) throw new Error(); return r.json(); })
       .then(data => { setCountries(data); setLoading(false); })
       .catch(() => { setError(true); setLoading(false); });

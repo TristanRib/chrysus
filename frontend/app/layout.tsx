@@ -4,7 +4,7 @@ import Header from "./components/Header";
 
 export const metadata: Metadata = {
   title: "Chrysus",
-  description: "Gold price tracker",
+  description: "Visualiseur de marchés financiers",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

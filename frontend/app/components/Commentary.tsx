@@ -58,17 +58,11 @@ export default function Commentary({ apiPath, period }: Props) {
         </span>
         <div style={{ display: "flex", gap: "0.75rem" }}>
           {(["quick", "detailed"] as Mode[]).filter(m => m !== mode).map(m => (
-            <button key={m} onClick={() => request(m)}
-              style={{ background: "none", border: "1px solid #333", borderRadius: 5, cursor: "pointer", fontSize: "0.72rem", color: "#888", padding: "0.2rem 0.6rem", transition: "color 0.15s, border-color 0.15s" }}
-              onMouseEnter={e => { (e.target as HTMLButtonElement).style.color = "#e5e5e5"; (e.target as HTMLButtonElement).style.borderColor = "#555"; }}
-              onMouseLeave={e => { (e.target as HTMLButtonElement).style.color = "#888"; (e.target as HTMLButtonElement).style.borderColor = "#333"; }}>
+            <button key={m} onClick={() => request(m)} className="btn-switch">
               {m === "quick" ? "Analyser" : "Rechercher l'actualité"}
             </button>
           ))}
-          <button onClick={() => request(mode)} title="Regénérer"
-            style={{ background: "none", border: "none", cursor: "pointer", fontSize: "0.75rem", color: "#555", padding: 0, transition: "color 0.15s" }}
-            onMouseEnter={e => { (e.target as HTMLButtonElement).style.color = "#e5e5e5"; }}
-            onMouseLeave={e => { (e.target as HTMLButtonElement).style.color = "#555"; }}>
+          <button onClick={() => request(mode)} title="Regénérer" className="btn-regen">
             ↺
           </button>
         </div>

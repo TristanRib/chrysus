@@ -13,6 +13,9 @@ load_dotenv(Path(__file__).parent.parent / ".env")
 
 app = FastAPI()
 
+_groq_key    = os.environ.get("GROQ_KEY", "")
+_groq_client = Groq(api_key=_groq_key) if _groq_key else None
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000"],
@@ -139,8 +142,8 @@ def _fetch_imf(country_code: str, imf_indicator: str) -> dict | None:
         return None
 
 
-@app.get("/macro")
-def get_macro():
+@app.get("/nations")
+def get_nations():
     now = time.time()
     if _macro_cache["data"] and now - _macro_cache["ts"] < _MACRO_TTL:
         return _macro_cache["data"]
@@ -210,9 +213,8 @@ def get_commentary(category: str, asset: str, period: str = "1mo", mode: str = "
     if mode not in COMMENTARY_MODES:
         raise HTTPException(400, f"mode must be one of {COMMENTARY_MODES}")
 
-    api_key = os.environ.get("GROQ_KEY", "")
-    if not api_key:
-        raise HTTPException(503, "GROQ_API_KEY not configured")
+    if not _groq_client:
+        raise HTTPException(503, "GROQ_KEY not configured")
 
     ticker = resolve_ticker(category, asset)
     data   = fetch_history(ticker, period)
@@ -248,8 +250,7 @@ def get_commentary(category: str, asset: str, period: str = "1mo", mode: str = "
         )
 
     try:
-        client     = Groq(api_key=api_key)
-        completion = client.chat.completions.create(
+        completion = _groq_client.chat.completions.create(
             model=model,
             messages=[{"role": "user", "content": prompt}],
             **({"max_tokens": 250, "temperature": 0.3} if mode == "quick" else {}),
