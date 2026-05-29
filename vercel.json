@@ -5,12 +5,6 @@
     { "src": "api/main.py",           "use": "@vercel/python" }
   ],
   "routes": [
-    { "src": "/commodities/(.*)", "dest": "api/main.py" },
-    { "src": "/forex/(.*)",       "dest": "api/main.py" },
-    { "src": "/crypto/(.*)",      "dest": "api/main.py" },
-    { "src": "/snapshot",         "dest": "api/main.py" },
-    { "src": "/nations",          "dest": "api/main.py" },
-    { "src": "/commentary/(.*)", "dest": "api/main.py" },
-    { "src": "/(.*)",             "dest": "frontend/$1" }
+    { "src": "/api/(.*)", "dest": "api/main.py" }
   ]
 }
