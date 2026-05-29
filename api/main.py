@@ -18,7 +18,7 @@ _groq_client = Groq(api_key=_groq_key) if _groq_key else None
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=[os.environ.get("FRONTEND_URL", "http://localhost:3000")],
     allow_methods=["GET"],
     allow_headers=["*"],
 )
