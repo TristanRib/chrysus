@@ -13,14 +13,6 @@ load_dotenv(Path(__file__).parent.parent / ".env")
 
 app = FastAPI()
 
-@app.middleware("http")
-async def strip_api_prefix(request, call_next):
-    prefix = os.environ.get("API_ROOT_PATH", "")
-    if prefix and request.scope["path"].startswith(prefix):
-        request.scope["path"]     = request.scope["path"][len(prefix):] or "/"
-        request.scope["raw_path"] = request.scope["path"].encode()
-    return await call_next(request)
-
 _groq_key    = os.environ.get("GROQ_KEY", "")
 _groq_client = Groq(api_key=_groq_key) if _groq_key else None
 
